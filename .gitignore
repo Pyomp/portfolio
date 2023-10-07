@@ -1,0 +1,6 @@
+.git
+.vscode
+**/*.blend1
+**/node_modules
+**/package-lock.json
+.chromeTestDataDir
