@@ -1,67 +1,35 @@
 'use strict'
 
-import { Matrix4 } from '../js-lib/math/Matrix4.js'
-import { GlContext } from '../js-lib/webgl/GlContext.js'
-import { GlProgram } from '../js-lib/webgl/GlProgram.js'
-import { GlVao } from '../js-lib/webgl/GlVao.js'
-import { GlTexture } from '../js-lib/webgl/GlTexture.js'
-import { GlState } from '../js-lib/webgl/GlState.js'
-import { Camera } from '../js-lib/math/Camera.js'
-import { Vector3 } from '../js-lib/math/Vector3.js'
+import { OrbitControls } from "../js-lib/3dEngine/controls/OrbitControls.js"
+import { CubeGeometry } from "../js-lib/3dEngine/geometries/CubeGeometry.js"
+import { FirstMaterial } from "../js-lib/3dEngine/materials/FirstMaterial.js"
+import { Node3D } from "../js-lib/3dEngine/sceneGraph/Node3D.js"
+import { Object3D } from "../js-lib/3dEngine/sceneGraph/Object3D.js"
+import { Renderer } from "../js-lib/3dEngine/sceneGraph/Renderer.js"
+import { Uniform } from "../js-lib/3dEngine/sceneGraph/Uniform.js"
 
-const glContext = new GlContext()
-document.body.appendChild(glContext.canvas)
+const renderer = new Renderer()
+document.body.appendChild(renderer.domElement)
 
-// make a canvas with text in the center
+const orbitControls = new OrbitControls(renderer.camera, renderer.domElement)
 
-const camera = new Camera({})
-camera.position.set(1, 5, 8)
-
-camera.update()
-
-glContext.resizeListeners.add((width, height) => {
-    camera.aspect = width / height
+const cubeGeometry = new CubeGeometry()
+const node3d = new Node3D(renderer.scene)
+const object3d = new Object3D({
+    material: new FirstMaterial(renderer.camera.projectionViewMatrix),
+    geometry: cubeGeometry,
+    uniforms: { modelView: new Uniform(node3d.worldMatrix) }
 })
-
-const glState = new GlState(glContext.gl)
-
-glState.setClearColor(0.7, 0.7, 1, 1)
+node3d.objects.add(object3d)
 
 // above this line is initialization code
 // --------------------------------------
 // below is rendering code.
 
-const lightDir = new Vector3(1, 5, 8).normalize()
-
-function render() {
-    camera.update()
-
-    glState.clear()
-    // glState.depthTest = false
-    // glState.depthWrite = false
-    glState.cullFace = true
-
-
-    // draw center cube
-    const matrix4 = new Matrix4()
-        .identity()
-        .makeTranslation(0, 0, 0)
-
-    glProgram.uniformUpdate['modelView'](matrix4)
-
-
-    // glContext.gl.drawArrays(WebGL2RenderingContext.TRIANGLES, 0, 24)
-
-    glContext.gl.drawElements(
-        WebGL2RenderingContext.TRIANGLES,
-        cubeVertexIndices.length,                // num vertices to process
-        WebGL2RenderingContext.UNSIGNED_SHORT, // type of indices
-        0,                 // offset on bytes to indices
-    )
-}
-
 function loop() {
-    render()
+    orbitControls.update()
+    object3d.material.uniforms.projection.needsUpdate = true
+    renderer.render()
     requestAnimationFrame(loop)
 }
 loop()
