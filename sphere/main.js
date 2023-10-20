@@ -125,7 +125,7 @@ function removePointLight() {
 
 const lightParticle = new Object3D({
     drawMode: 'POINTS',
-    blending: true,    
+    blending: true,
     depthWrite: false,
     geometry: new Geometry(0),
     material: new Material({
@@ -154,7 +154,7 @@ const lightParticle = new Object3D({
                 PointLight pointLight = pointLights[gl_VertexID];
                 
                 gl_Position = projectionViewMatrix * vec4(pointLight.position, 1.0);
-                gl_PointSize = 40.;
+                gl_PointSize = 300. / gl_Position.z;
                 v_color = vec4(pointLight.color, pointLight.intensity);
             }`,
         fragmentShader: () =>
@@ -206,9 +206,16 @@ shininessLabel.oninput = (value) => {
     checkerSphereMesh.shininess = value
 }
 
+const finalizationRegistry = new FinalizationRegistry(() => {
+    console.log('gl context free')
+})
+
 const loseContextButton = document.createElement('button')
 loseContextButton.textContent = 'WebGL lose context'
 loseContextButton.style.backgroundColor = '#444499'
-loseContextButton.onclick = () => { renderer.loseContext() }
+loseContextButton.onclick = () => {
+    finalizationRegistry.register(renderer.glContext.gl)
+    renderer.loseContext()
+}
 
 panel.append(shininessLabel.element, lightLabel.element, loseContextButton)
