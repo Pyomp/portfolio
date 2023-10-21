@@ -4,12 +4,9 @@
     "target": "es2022",
     "moduleResolution": "classic",
     "checkJs": true,
-    // "experimentalDecorators": true,
     "alwaysStrict": true,
     "baseUrl": ".",
     "disableSizeLimit": true,
-    // "forceConsistentCasingInFileNames": true,
-    //"paths": {}
     "pretty": true,
     "rootDir": ".",
     "declaration": true

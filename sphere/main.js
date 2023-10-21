@@ -27,6 +27,9 @@ const orbitControls = new OrbitControls(renderer.camera, renderer.domElement)
 
 const geometry = new SphereGeometry()
 const material = new PhongMaterial()
+
+const L = 128
+const D = 10
 const map = new Texture({
     minFilter: 'NEAREST',
     magFilter: 'NEAREST',
@@ -36,10 +39,10 @@ const map = new Texture({
     width: 4,
     height: 4,
     data: new Uint8Array([
-        192, 128, 192, 128,
-        128, 192, 128, 192,
-        192, 128, 192, 128,
-        128, 192, 128, 192,
+        L, D, L, D,
+        D, L, D, L,
+        L, D, L, D,
+        D, L, D, L,
     ])
 })
 
