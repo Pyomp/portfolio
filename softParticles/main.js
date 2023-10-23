@@ -45,7 +45,7 @@ renderer.scene.addNode3D(checkerSphereMesh)
 // Animation
 loopRaf.listeners.add(() => {
     orbitControls.update()
-    renderer.updateParticles()
+    renderer.updateParticles(loopRaf.deltatimeSecond)
     renderer.render()
 })
 
@@ -71,7 +71,9 @@ panel.style.right = '0'
 const resetParticleButton = document.createElement('button')
 resetParticleButton.textContent = 'Reset Particle'
 resetParticleButton.onclick = () => {
-    renderer.particles.setParticle(1, 2, 3)
+    for (let i = 0; i < 1000; i++) {
+        renderer.particles.setParticle(i, Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5, 0)
+    }
 }
 panel.appendChild(resetParticleButton)
 
