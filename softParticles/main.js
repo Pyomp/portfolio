@@ -14,6 +14,7 @@ import { LightParticleObject } from "../js-lib/3dEngine/extras/LightParticleObje
 import { RendererSoftParticle } from "../js-lib/3dEngine/renderer/RendererSoftParticle.js"
 import { styles } from "../js-lib/dom/styles/styles.js"
 import { Vector3 } from "../js-lib/math/Vector3.js"
+import { ParticleAnimation } from "../js-lib/3dEngine/renderer/modules/ParticlesRendererModules/ParticleAnimation.js"
 
 const renderer = new RendererSoftParticle()
 document.body.prepend(renderer.domElement)
@@ -74,20 +75,28 @@ const resetParticleButton = document.createElement('button')
 resetParticleButton.textContent = 'Reset Particle'
 resetParticleButton.style.backgroundColor = '#444499'
 
-const 
-renderer.particles.setPattern(0, [
-    0, 0, 0, 0,
-    1, 0, 0, 0,
-    0, 0, 0, 0,
+const fireParticleAnimation = new ParticleAnimation()
 
-    1, 0, 0, 0,
-    1, 0, 0, 1,
-    10, 0, 0, 0,
+fireParticleAnimation.addFrame({
+    time: 0,
+    color: new Color(0xff0000),
+    alpha: 0,
+    size: 0
+})
+fireParticleAnimation.addFrame({
+    time: 1,
+    color: new Color(0xff0000),
+    alpha: 1,
+    size: 10
+})
+fireParticleAnimation.addFrame({
+    time: 2,
+    color: new Color(0x222222),
+    alpha: 0,
+    size: 5
+})
 
-    2, 0, 0, 0,
-    0.2, 0.2, 0.2, 0,
-    2, 0, 0, 0,
-])
+renderer.particles.setPattern(0, fireParticleAnimation)
 
 const particleData = {
     position: new Vector3(),
