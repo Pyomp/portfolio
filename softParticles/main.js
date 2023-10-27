@@ -12,6 +12,8 @@ import { OnlyColorPhongMaterial } from "./OnlyColorPhongMaterial.js"
 import { KnotGeometry } from "../js-lib/3dEngine/geometries/KnotGeometry.js"
 import { LightParticleObject } from "../js-lib/3dEngine/extras/LightParticleObject.js"
 import { RendererSoftParticle } from "../js-lib/3dEngine/renderer/RendererSoftParticle.js"
+import { styles } from "../js-lib/dom/styles/styles.js"
+import { Vector3 } from "../js-lib/math/Vector3.js"
 
 const renderer = new RendererSoftParticle()
 document.body.prepend(renderer.domElement)
@@ -70,15 +72,40 @@ panel.style.right = '0'
 
 const resetParticleButton = document.createElement('button')
 resetParticleButton.textContent = 'Reset Particle'
+resetParticleButton.style.backgroundColor = '#444499'
+
+const 
+renderer.particles.setPattern(0, [
+    0, 0, 0, 0,
+    1, 0, 0, 0,
+    0, 0, 0, 0,
+
+    1, 0, 0, 0,
+    1, 0, 0, 1,
+    10, 0, 0, 0,
+
+    2, 0, 0, 0,
+    0.2, 0.2, 0.2, 0,
+    2, 0, 0, 0,
+])
+
+const particleData = {
+    position: new Vector3(),
+    velocity: new Vector3(),
+    type: 0
+}
 resetParticleButton.onclick = () => {
     for (let i = 0; i < 1000; i++) {
-        renderer.particles.setParticle(i, Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5, 0)
+        particleData.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5)
+        particleData.velocity.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5)
+        renderer.particles.setParticle(i, particleData)
     }
 }
 panel.appendChild(resetParticleButton)
 
 const loseContextButton = document.createElement('button')
 loseContextButton.textContent = 'Lose Context'
+loseContextButton.style.backgroundColor = '#444499'
 loseContextButton.onclick = () => {
     renderer.loseContext()
 }
