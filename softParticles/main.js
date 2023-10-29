@@ -12,10 +12,7 @@ import { OnlyColorPhongMaterial } from "./OnlyColorPhongMaterial.js"
 import { KnotGeometry } from "../js-lib/3dEngine/geometries/KnotGeometry.js"
 import { LightParticleObject } from "../js-lib/3dEngine/extras/LightParticleObject.js"
 import { RendererSoftParticle } from "../js-lib/3dEngine/renderer/RendererSoftParticle.js"
-import { Vector3 } from "../js-lib/math/Vector3.js"
 import { FireParticleSystem } from "./FireParticleSystem.js"
-import { Quaternion } from "../js-lib/math/Quaternion.js"
-import { Matrix4 } from "../js-lib/math/Matrix4.js"
 
 const renderer = new RendererSoftParticle()
 document.body.prepend(renderer.domElement)
@@ -66,14 +63,36 @@ pointLight2.color.setRGB(0, 0, 1)
 pointLight2.position.set(-3, 0, 0)
 renderer.pointLights.add(pointLight2)
 
+// Particle
+let fireParticleSystem = new FireParticleSystem()
+fireParticleSystem.position.y = -3
+renderer.particles.particleSystems.add(fireParticleSystem)
+
+// panel
 const panel = document.createElement('div')
 panel.style.position = 'fixed'
 panel.style.top = '0'
 panel.style.right = '0'
 
-const fireParticleSystem = new FireParticleSystem()
-fireParticleSystem.position.y = -3
-renderer.particles.particleSystems.add(fireParticleSystem)
+const startFireButton = document.createElement('button')
+startFireButton.textContent = 'Start Fire'
+startFireButton.style.backgroundColor = '#444499'
+startFireButton.onclick = () => {
+    if (fireParticleSystem) return
+    fireParticleSystem = new FireParticleSystem()
+    fireParticleSystem.position.y = -3
+    renderer.particles.particleSystems.add(fireParticleSystem)
+}
+panel.appendChild(startFireButton)
+
+const stopFireButton = document.createElement('button')
+stopFireButton.textContent = 'Stop Fire'
+stopFireButton.style.backgroundColor = '#444499'
+stopFireButton.onclick = () => {
+    fireParticleSystem?.stop()
+    fireParticleSystem = undefined
+}
+panel.appendChild(stopFireButton)
 
 const loseContextButton = document.createElement('button')
 loseContextButton.textContent = 'Lose Context'
