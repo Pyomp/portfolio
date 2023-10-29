@@ -14,7 +14,10 @@ import { LightParticleObject } from "../js-lib/3dEngine/extras/LightParticleObje
 import { RendererSoftParticle } from "../js-lib/3dEngine/renderer/RendererSoftParticle.js"
 import { styles } from "../js-lib/dom/styles/styles.js"
 import { Vector3 } from "../js-lib/math/Vector3.js"
-import { ParticleAnimation } from "../js-lib/3dEngine/renderer/modules/ParticlesRendererModules/ParticleAnimation.js"
+import { ParticleSystem } from "../js-lib/3dEngine/sceneGraph/particle/ParticleSystem.js"
+import { ParticleKeyframe } from "../js-lib/3dEngine/sceneGraph/particle/ParticleKeyframe.js"
+import { Texture } from "../js-lib/3dEngine/sceneGraph/Texture.js"
+import { ParticleGeometry } from "../js-lib/3dEngine/sceneGraph/particle/ParticleGeometry.js"
 
 const renderer = new RendererSoftParticle()
 document.body.prepend(renderer.domElement)
@@ -48,8 +51,7 @@ renderer.scene.addNode3D(checkerSphereMesh)
 // Animation
 loopRaf.listeners.add(() => {
     orbitControls.update()
-    renderer.updateParticles(loopRaf.deltatimeSecond)
-    renderer.render()
+    renderer.render(loopRaf.deltatimeSecond)
 })
 
 // Point Light
@@ -75,28 +77,51 @@ const resetParticleButton = document.createElement('button')
 resetParticleButton.textContent = 'Reset Particle'
 resetParticleButton.style.backgroundColor = '#444499'
 
-const fireParticleAnimation = new ParticleAnimation()
+const fireParticleAnimation = new ParticleSystem({
+    particleKeyframes: [
+        new ParticleKeyframe({
+            time: 0,
+            color: new Color(1, 1, 1, 1),
+            size: 5
+        }),
+        new ParticleKeyframe({
+            time: 1,
+            color: new Color(1, 0, 0, 1),
+            size: 10
+        }),
+        new ParticleKeyframe({
+            time: 2,
+            color: new Color(1, 0, 0, 0),
+            size: 5
+        })
+    ],
+    geometry: new ParticleGeometry(100),
+    map: new Texture({ data: new Image(1, 1) })
+})
+renderer.particles.particleSystems.add(fireParticleAnimation)
 
-fireParticleAnimation.addFrame({
-    time: 0,
-    color: new Color(0xff0000),
-    alpha: 0,
-    size: 0
-})
-fireParticleAnimation.addFrame({
-    time: 1,
-    color: new Color(0xff0000),
-    alpha: 1,
-    size: 10
-})
-fireParticleAnimation.addFrame({
-    time: 2,
-    color: new Color(0x222222),
-    alpha: 0,
-    size: 5
-})
+// const fireParticleAnimation = new ParticleAnimation()
 
-renderer.particles.setPattern(0, fireParticleAnimation)
+// fireParticleAnimation.addFrame({
+//     time: 0,
+//     color: new Color(0xff0000),
+//     alpha: 0,
+//     size: 0
+// })
+// fireParticleAnimation.addFrame({
+//     time: 1,
+//     color: new Color(0xff0000),
+//     alpha: 1,
+//     size: 10
+// })
+// fireParticleAnimation.addFrame({
+//     time: 2,
+//     color: new Color(0x222222),
+//     alpha: 0,
+//     size: 5
+// })
+
+// renderer.particles.setPattern(0, fireParticleAnimation)
 
 const particleData = {
     position: new Vector3(),
@@ -107,7 +132,7 @@ resetParticleButton.onclick = () => {
     for (let i = 0; i < 1000; i++) {
         particleData.position.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5)
         particleData.velocity.set(Math.random() - 0.5, Math.random() - 0.5, Math.random() - 0.5)
-        renderer.particles.setParticle(i, particleData)
+        // renderer.particles.setParticle(i, particleData)
     }
 }
 panel.appendChild(resetParticleButton)
