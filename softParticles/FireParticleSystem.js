@@ -23,7 +23,7 @@ export class FireParticleSystem extends ParticleSystem {
                 new ParticleKeyframe({
                     time: 2,
                     color: new Color(0, 0, 0, 0),
-                    size: 8
+                    size: 10
                 })
             ],
             geometry: new ParticleGeometry(count),
