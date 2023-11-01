@@ -10,8 +10,12 @@ export class OnlyColorPhongMaterial extends Material {
                 in vec2 uv;
 
                 uniform cameraUbo {
+                    mat4 viewMatrix;
+                    mat4 projectionMatrix;
                     mat4 projectionViewMatrix;
                     vec3 cameraPosition;
+                    float near;
+                    float far;
                 };
 
                 uniform mat4 modelView;
