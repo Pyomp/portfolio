@@ -35,7 +35,7 @@ export class OnlyColorPhongMaterial extends Material {
                     v_worldPosition = worldPosition.xyz / worldPosition.w;
                     v_surfaceToView = cameraPosition - v_worldPosition;
             }`,
-            fragmentShader: (pointLightCount) =>
+            fragmentShader: ({pointLightCount}) =>
                 `#version 300 es
                 precision highp float;
 
