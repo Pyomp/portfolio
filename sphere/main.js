@@ -14,9 +14,6 @@ import { SphereGeometry } from "../js-lib/3dEngine/geometries/SphereGeometry.js"
 import { Color } from "../js-lib/math/Color.js"
 import { Texture } from "../js-lib/3dEngine/sceneGraph/Texture.js"
 import { HTMLRange } from "./HTMLRange.js"
-import { Geometry } from "../js-lib/3dEngine/sceneGraph/Geometry.js"
-import { Material } from "../js-lib/3dEngine/sceneGraph/Material.js"
-import { createSparkleCanvas } from "../js-lib/3dEngine/textures/sparkle.js"
 import { LightParticleObject } from "../js-lib/3dEngine/extras/LightParticleObject.js"
 
 const renderer = new Renderer()

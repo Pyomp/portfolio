@@ -11,10 +11,10 @@ import { Color } from "../js-lib/math/Color.js"
 import { OnlyColorPhongMaterial } from "./OnlyColorPhongMaterial.js"
 import { KnotGeometry } from "../js-lib/3dEngine/geometries/KnotGeometry.js"
 import { LightParticleObject } from "../js-lib/3dEngine/extras/LightParticleObject.js"
-import { RendererSoftParticle } from "../js-lib/3dEngine/renderer/RendererSoftParticle.js"
 import { FireParticleSystem } from "./FireParticleSystem.js"
+import { Renderer } from "../js-lib/3dEngine/renderer/Renderer.js"
 
-const renderer = new RendererSoftParticle()
+const renderer = new Renderer()
 document.body.prepend(renderer.domElement)
 
 const orbitControls = new OrbitControls(renderer.camera, renderer.domElement)
