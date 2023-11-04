@@ -9,9 +9,9 @@
 
 - 3D engine:
   - tests e2e: images comparison
-  - animation system
-  - gltf mesh
-  - gltf skinned mesh
+  - ~~animation system~~
+  - ~~gltf mesh~~
+  - ~~gltf skinned mesh~~
   - gltf splatting mesh
   - raycaster (gpgpu?)
   - improve Orbit Controls (mobile, pad)
