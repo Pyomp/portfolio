@@ -47,7 +47,8 @@ export class Input {
             )
 
             if (move.length > 0) {
-                this.theta = move.theta
+
+                this.theta = move.theta + this.thirdControls.spherical.theta
                 this.directionX = Math.cos(this.theta)
                 this.directionY = Math.sin(this.theta)
                 this.length = move.length

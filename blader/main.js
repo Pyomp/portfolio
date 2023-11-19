@@ -45,7 +45,7 @@ for (const primitive of blader.mesh.primitives) {
 }
 
 const skinnedNode = new SkinnedNode(blader)
-skinnedNode.animation.play('idle_pingpong')
+skinnedNode.mixer.play('idle_pingpong')
 renderer.scene.addNode3D(skinnedNode)
 
 // Animation
