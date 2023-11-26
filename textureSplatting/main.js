@@ -12,6 +12,7 @@ import { SplattingTextures } from "../js-lib/3dEngine/sceneGraph/gltf/splatting/
 import { getImage } from "../js-lib/utils/utils.js"
 import { Vector3 } from "../js-lib/math/Vector3.js"
 import { Vector2 } from "../js-lib/math/Vector2.js"
+import { Zone0Node3D } from "./Zone0Node3D.js"
 
 const renderer = new Renderer()
 document.body.prepend(renderer.domElement)
@@ -36,54 +37,9 @@ const orbitControls = new OrbitControls(renderer.camera, renderer.domElement)
 
 // Mesh Init
 
-const gltfNodes = await loadGLTF(new URL('./zone0/zone0.glb', import.meta.url))
-
-const gltfNode = gltfNodes['terrainStart']
-
-const [
-    splattingImage,
-    image1,
-    normalImage1,
-    image2,
-    normalImage2,
-    image3,
-    normalImage3,
-    image4,
-    normalImage4
-] = await Promise.all([
-    getImage(new URL('./zone0/textureSplatting.png', import.meta.url).href),
-
-    getImage(new URL('./zone0/textures/Grass001_1K-JPG/Grass001_1K_Color.jpg', import.meta.url).href),
-    getImage(new URL('./zone0/textures/Grass001_1K-JPG/Grass001_1K_NormalGL.jpg', import.meta.url).href),
-
-    getImage(new URL('./zone0/textures/Ground037_1K-JPG/Ground037_1K_Color.jpg', import.meta.url).href),
-    getImage(new URL('./zone0/textures/Ground037_1K-JPG/Ground037_1K_NormalGL.jpg', import.meta.url).href),
-
-    getImage(new URL('./zone0/textures/Ground031_1K-JPG/Ground031_1K_Color.jpg', import.meta.url).href),
-    getImage(new URL('./zone0/textures/Ground031_1K-JPG/Ground031_1K_NormalGL.jpg', import.meta.url).href),
-
-    getImage(new URL('./zone0/textures/Ground054_1K-JPG/Ground054_1K_Color.jpg', import.meta.url).href),
-    getImage(new URL('./zone0/textures/Ground054_1K-JPG/Ground054_1K_NormalGL.jpg', import.meta.url).href),
-])
-
-const splattingTextures = new SplattingTextures({
-    splattingImage,
-    image1,
-    normalImage1,
-    map1Scale: new Vector2(100, 100),
-    image2,
-    normalImage2,
-    map2Scale: new Vector2(100, 100),
-    image3,
-    normalImage3,
-    map3Scale: new Vector2(100, 100),
-    image4,
-    normalImage4,
-    map4Scale: new Vector2(100, 100),
-})
-
-const node = new SplattingNode(gltfNode, splattingTextures)
-renderer.scene.addNode3D(node)
+await Zone0Node3D.init()
+const zone0 = new Zone0Node3D()
+renderer.scene.addNode3D(zone0)
 
 // Animation
 

@@ -14,6 +14,10 @@ import { Animation } from "../js-lib/3dEngine/sceneGraph/gltf/skinned/animation/
 import { SkillDirectionButton } from "../js-lib/dom/components/SkillDirectionButton.js"
 import { FireBall } from "./skills/FireBall.js"
 import { Spherical } from "../js-lib/math/Spherical.js"
+import { updatePhysics, updateRun, updateStaticCollision } from "../js-lib/math/physics/physics.js"
+import { Zone0Node3D } from "../textureSplatting/Zone0Node3D.js"
+import { StaticBody } from "../js-lib/math/physics/StaticBody.js"
+import { PI, PI05 } from "../js-lib/math/MathUtils.js"
 
 const renderer = new Renderer()
 document.body.prepend(renderer.domElement)
@@ -42,7 +46,6 @@ renderer.scene.addNode3D(playerNode)
 const input = new Input(renderer.domElement, renderer.camera)
 input.setTargetCamera(playerNode.position)
 
-
 const skillPanel = document.createElement('div')
 skillPanel.style.position = 'absolute'
 skillPanel.style.bottom = '50px'
@@ -69,8 +72,40 @@ setInterval(() => {
         renderer.particles.particleSystems.add(fireBall)
     }
 }, 1000)
+await Zone0Node3D.init()
+const terrain = new Zone0Node3D()
+
+const groundPhysics = new StaticBody(Zone0Node3D.gltfNode)
+
+renderer.scene.addNode3D(terrain)
+
+const physicsDeltaMilliseconds = 10
+
+let lastPhysicsUpdate = performance.now()
+
+const runAcceleration = new Vector3()
+
+function physicsUpdate() {
+    const newTime = performance.now()
+    for (let i = lastPhysicsUpdate; i < newTime; i += physicsDeltaMilliseconds) {
+        const dt = physicsDeltaMilliseconds / 1000
+        updateStaticCollision(groundPhysics, playerNode)
+        updatePhysics(playerNode, dt)
+
+        const frontTheta = input.theta +PI
+
+        runAcceleration.x = Math.sin(frontTheta)* input.length
+        runAcceleration.y = 0
+        runAcceleration.z = Math.cos(frontTheta) * input.length
+
+        console.log(runAcceleration)
+        updateRun(playerNode, runAcceleration, dt)
+    }
+    lastPhysicsUpdate = newTime
+}
 
 loopRaf.listeners.add(() => {
+    physicsUpdate()
     input.update()
 
     skillDirectionButton.update()
