@@ -79,7 +79,8 @@ const groundPhysics = new StaticBody(Zone0Node3D.gltfNode)
 
 renderer.scene.addNode3D(terrain)
 
-const physicsDeltaMilliseconds = 10
+const physicsDeltaMillisecond = 10
+const physicsDeltaSecond = physicsDeltaMillisecond / 1000
 
 let lastPhysicsUpdate = performance.now()
 
@@ -87,19 +88,17 @@ const runAcceleration = new Vector3()
 
 function physicsUpdate() {
     const newTime = performance.now()
-    for (let i = lastPhysicsUpdate; i < newTime; i += physicsDeltaMilliseconds) {
-        const dt = physicsDeltaMilliseconds / 1000
+    for (let i = lastPhysicsUpdate; i < newTime; i += physicsDeltaMillisecond) {
         updateStaticCollision(groundPhysics, playerNode)
-        updatePhysics(playerNode, dt)
+        updatePhysics(playerNode, physicsDeltaSecond)
 
-        const frontTheta = input.theta +PI
+        const frontTheta = input.theta + PI
 
-        runAcceleration.x = Math.sin(frontTheta)* input.length
+        runAcceleration.x = Math.sin(frontTheta) * input.length
         runAcceleration.y = 0
         runAcceleration.z = Math.cos(frontTheta) * input.length
 
-        console.log(runAcceleration)
-        updateRun(playerNode, runAcceleration, dt)
+        updateRun(playerNode, runAcceleration, physicsDeltaSecond)
     }
     lastPhysicsUpdate = newTime
 }
