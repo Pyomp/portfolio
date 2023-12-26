@@ -20,7 +20,7 @@ import { StaticBody } from "../js-lib/math/physics/StaticBody.js"
 import { PI, PI05 } from "../js-lib/math/MathUtils.js"
 
 const renderer = new Renderer()
-document.body.prepend(renderer.domElement)
+document.body.prepend(renderer.htmlElement)
 
 // Point Light
 const lightParticleObject = new LightParticleObject()

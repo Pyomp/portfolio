@@ -1,15 +1,21 @@
 import { loadGLTF } from "../js-lib/3dEngine/loaders/gltfLoader.js"
-import { SplattingNode } from "../js-lib/3dEngine/sceneGraph/gltf/splatting/SplattingNode.js"
-import { SplattingTextures } from "../js-lib/3dEngine/sceneGraph/gltf/splatting/SplattingTextures.js"
+import { Node3D } from "../js-lib/3dEngine/sceneGraph/Node3D.js"
+import { Object3D } from "../js-lib/3dEngine/sceneGraph/Object3D.js"
+import { Texture } from "../js-lib/3dEngine/sceneGraph/Texture.js"
 import { Vector2 } from "../js-lib/math/Vector2.js"
 import { getImage } from "../js-lib/utils/utils.js"
 
-let gltfNode, splattingTextures
+/** @type {SplattingMaterial} */ let cachedMaterial
+/** @type {Geometry} */ let geometry
+/** @type {{[name: string]: Texture}} */ let textures
 
-async function init() {
+async function init(/** @type {SplattingMaterial} */ material) {
+    cachedMaterial = material
     const gltfNodes = await loadGLTF(new URL('./zone0/zone0.glb', import.meta.url))
 
-    gltfNode = gltfNodes['terrainStart']
+    const gltfNode = gltfNodes['terrainStart']
+
+    const gltfPrimitive = gltfNode.mesh.primitives[0]
 
     const [
         splattingImage,
@@ -36,35 +42,38 @@ async function init() {
         getImage(new URL('./zone0/textures/Ground054_1K-JPG/Ground054_1K_Color.jpg', import.meta.url).href),
         getImage(new URL('./zone0/textures/Ground054_1K-JPG/Ground054_1K_NormalGL.jpg', import.meta.url).href),
     ])
-
-    splattingTextures = new SplattingTextures({
-        splattingImage,
-        image1,
-        normalImage1,
-        map1Scale: new Vector2(100, 100),
-        image2,
-        normalImage2,
-        map2Scale: new Vector2(100, 100),
-        image3,
-        normalImage3,
-        map3Scale: new Vector2(100, 100),
-        image4,
-        normalImage4,
-        map4Scale: new Vector2(100, 100),
-    })
+    geometry = material.createGeometryFromGltf(gltfPrimitive)
+    textures = material.createTextures(splattingImage, image1, normalImage1, image2, normalImage2, image3, normalImage3, image4, normalImage4)
 }
 
 function free() {
-    gltfNode = undefined
-    splattingTextures = undefined
+    cachedMaterial = undefined
+    geometry = undefined
+    geometry.needsDelete = true
+    textures = undefined
+    for (const key in textures) {
+        textures[key].needsDelete = true
+    }
 }
 
-export class Zone0Node3D extends SplattingNode {
-    static get gltfNode() { return gltfNode }
+export class Zone0Node3D extends Node3D {
     static init = init
     static free = free
 
     constructor() {
-        super(gltfNode, splattingTextures)
+        super()
+        this.objects.add(new Object3D({
+            material: cachedMaterial,
+            geometry,
+            uniforms: cachedMaterial.createUniforms(
+                this.worldMatrix,
+                this.normalMatrix,
+                new Vector2(100, 100),
+                new Vector2(100, 100),
+                new Vector2(100, 100),
+                new Vector2(100, 100),
+            ),
+            textures
+        }))
     }
-}
+}    

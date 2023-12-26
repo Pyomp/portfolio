@@ -3,19 +3,14 @@
 import { styles } from "../js-lib/dom/styles/styles.js"
 import { OrbitControls } from "../js-lib/3dEngine/controls/OrbitControls.js"
 import { LightParticleObject } from "../js-lib/3dEngine/extras/LightParticleObject.js"
-import { loadGLTF } from "../js-lib/3dEngine/loaders/gltfLoader.js"
 import { Renderer } from "../js-lib/3dEngine/renderer/Renderer.js"
 import { PointLight } from "../js-lib/3dEngine/sceneGraph/light/PointLight.js"
 import { loopRaf } from "../js-lib/globals/loopRaf.js"
-import { SplattingNode } from "../js-lib/3dEngine/sceneGraph/gltf/splatting/SplattingNode.js"
-import { SplattingTextures } from "../js-lib/3dEngine/sceneGraph/gltf/splatting/SplattingTextures.js"
-import { getImage } from "../js-lib/utils/utils.js"
-import { Vector3 } from "../js-lib/math/Vector3.js"
-import { Vector2 } from "../js-lib/math/Vector2.js"
 import { Zone0Node3D } from "./Zone0Node3D.js"
+import { SplattingMaterial } from "../js-lib/3dEngine/sceneGraph/materials/SplattingMaterial.js"
 
 const renderer = new Renderer()
-document.body.prepend(renderer.domElement)
+document.body.prepend(renderer.htmlElement)
 renderer.camera.far = 1000
 
 // Point Light
@@ -33,11 +28,11 @@ pointLight2.color.setRGB(0, 0, 1)
 pointLight2.position.set(-3, 0, 0)
 renderer.pointLights.add(pointLight2)
 
-const orbitControls = new OrbitControls(renderer.camera, renderer.domElement)
+const orbitControls = new OrbitControls(renderer.camera, renderer.htmlElement)
 
 // Mesh Init
-
-await Zone0Node3D.init()
+const splattingMaterial = new SplattingMaterial()
+await Zone0Node3D.init(splattingMaterial)    
 const zone0 = new Zone0Node3D()
 renderer.scene.addNode3D(zone0)
 

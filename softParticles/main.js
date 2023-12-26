@@ -4,7 +4,6 @@ import { styles } from "../js-lib/dom/styles/styles.js"
 import { OrbitControls } from "../js-lib/3dEngine/controls/OrbitControls.js"
 import { Node3D } from "../js-lib/3dEngine/sceneGraph/Node3D.js"
 import { Object3D } from "../js-lib/3dEngine/sceneGraph/Object3D.js"
-import { Uniform } from "../js-lib/3dEngine/sceneGraph/Uniform.js"
 import { PointLight } from "../js-lib/3dEngine/sceneGraph/light/PointLight.js"
 import { loopRaf } from "../js-lib/globals/loopRaf.js"
 import { Color } from "../js-lib/math/Color.js"
@@ -15,9 +14,9 @@ import { FireParticleSystem } from "./FireParticleSystem.js"
 import { Renderer } from "../js-lib/3dEngine/renderer/Renderer.js"
 
 const renderer = new Renderer()
-document.body.prepend(renderer.domElement)
+document.body.prepend(renderer.htmlElement)
 
-const orbitControls = new OrbitControls(renderer.camera, renderer.domElement)
+const orbitControls = new OrbitControls(renderer.camera, renderer.htmlElement)
 
 // Mesh Init
 
@@ -30,10 +29,10 @@ class KnotMesh extends Node3D {
             material,
             geometry,
             uniforms: {
-                modelView: new Uniform(this.worldMatrix),
-                specular: new Uniform(new Color(0xaaaaaa)),
-                shininess: new Uniform(30),
-                color: new Uniform(new Color(1, 1, 1))
+                modelView: this.worldMatrix,
+                specular: new Color(0xaaaaaa),
+                shininess: 30,
+                color: new Color(1, 1, 1)
             }
         }))
     }

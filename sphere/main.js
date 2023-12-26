@@ -2,11 +2,9 @@
 
 import { styles } from "../js-lib/dom/styles/styles.js"
 import { OrbitControls } from "../js-lib/3dEngine/controls/OrbitControls.js"
-import { PhongMaterial } from "../js-lib/3dEngine/materials/PhongMaterial.js"
 import { Node3D } from "../js-lib/3dEngine/sceneGraph/Node3D.js"
 import { Object3D } from "../js-lib/3dEngine/sceneGraph/Object3D.js"
 import { Renderer } from "../js-lib/3dEngine/renderer/Renderer.js"
-import { Uniform } from "../js-lib/3dEngine/sceneGraph/Uniform.js"
 import { PointLight } from "../js-lib/3dEngine/sceneGraph/light/PointLight.js"
 import { Spherical } from "../js-lib/math/Spherical.js"
 import { loopRaf } from "../js-lib/globals/loopRaf.js"
@@ -14,12 +12,13 @@ import { SphereGeometry } from "../js-lib/3dEngine/geometries/SphereGeometry.js"
 import { Color } from "../js-lib/math/Color.js"
 import { Texture } from "../js-lib/3dEngine/sceneGraph/Texture.js"
 import { HTMLRange } from "./HTMLRange.js"
-import { LightParticleObject } from "../js-lib/3dEngine/extras/LightParticleObject.js"
+import { LightParticleMaterial, LightParticleObject } from "../js-lib/3dEngine/extras/LightParticleObject.js"
+import { PhongMaterial } from "../js-lib/3dEngine/sceneGraph/materials/PhongMaterial.js"
 
 const renderer = new Renderer()
-document.body.prepend(renderer.domElement)
+document.body.prepend(renderer.htmlElement)
 
-const orbitControls = new OrbitControls(renderer.camera, renderer.domElement)
+const orbitControls = new OrbitControls(renderer.camera, renderer.htmlElement)
 
 // Mesh Init
 
@@ -48,11 +47,12 @@ class CheckerSphereMesh extends Node3D {
     #checkerSphereObject = new Object3D({
         material,
         geometry,
-        uniforms: {
-            modelView: new Uniform(this.worldMatrix),
-            specular: new Uniform(new Color(0xaaaaaa)),
-            shininess: new Uniform(30)
-        },
+        uniforms: material.createUniforms(
+            this.worldMatrix,
+            this.normalMatrix,
+            30,
+            new Color(0xaaaaaa)
+        ),
         textures: {
             map
         }
@@ -60,8 +60,7 @@ class CheckerSphereMesh extends Node3D {
 
     /** @param {number} value */
     set shininess(value) {
-        this.#checkerSphereObject.uniforms.shininess.data = value
-        this.#checkerSphereObject.uniforms.shininess.needsUpdate = true
+        this.#checkerSphereObject.uniforms.shininess = value
     }
 
     constructor() {
@@ -83,7 +82,7 @@ loopRaf.listeners.add(() => {
         light.update(loopRaf.deltatimeSecond)
     }
 
-    renderer.render()
+    renderer.render(0.1)
 })
 
 // Point Light
@@ -124,7 +123,9 @@ function removePointLight() {
     }
 }
 
-const lightParticle = new LightParticleObject()
+const lightParticleMaterial = new LightParticleMaterial()
+const texture = lightParticleMaterial.createTextures()
+const lightParticle = new LightParticleObject(lightParticleMaterial, texture)
 
 // HTML
 

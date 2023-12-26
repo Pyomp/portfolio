@@ -7,10 +7,11 @@ import { loadGLTF } from "../js-lib/3dEngine/loaders/gltfLoader.js"
 import { Renderer } from "../js-lib/3dEngine/renderer/Renderer.js"
 import { PointLight } from "../js-lib/3dEngine/sceneGraph/light/PointLight.js"
 import { loopRaf } from "../js-lib/globals/loopRaf.js"
-import { StaticGltfNode } from "../js-lib/3dEngine/sceneGraph/gltf/static/StaticGltfNode.js"
+import { BasicStaticMaterial } from "../js-lib/3dEngine/sceneGraph/materials/BasicStaticGltfMaterial.js"
+import { Node3D } from "../js-lib/3dEngine/sceneGraph/Node3D.js"
 
 const renderer = new Renderer()
-document.body.prepend(renderer.domElement)
+document.body.prepend(renderer.htmlElement)
 
 // Point Light
 const lightParticleObject = new LightParticleObject()
@@ -26,35 +27,20 @@ pointLight2.color.setRGB(0, 0, 1)
 pointLight2.position.set(-3, 0, 0)
 renderer.pointLights.add(pointLight2)
 
-const orbitControls = new OrbitControls(renderer.camera, renderer.domElement)
+const orbitControls = new OrbitControls(renderer.camera, renderer.htmlElement)
 
 // Mesh Init
+const basicStaticMaterial = new BasicStaticMaterial()
 
 const gltfNodes = await loadGLTF(new URL('./cube.glb', import.meta.url))
 
-const cube = gltfNodes['Cube']
+const cubeNode = new Node3D()
+const cube = basicStaticMaterial.createObjectFromGltf(cubeNode, gltfNodes['Cube'].mesh.primitives[0])
+cubeNode.objects.add(cube)
 
-// const textureImage = new Image()
-// textureImage.src = new URL('./cubeTexture.png', import.meta.url).href
-// await new Promise((resolve) => { textureImage.onload = resolve })
-
-// for (const primitive of cube.mesh.primitives) {
-//     if (primitive.material.pbrMetallicRoughness.baseColorTexture) {
-//         primitive.material.pbrMetallicRoughness.baseColorTexture.image = textureImage
-//     }
-// }
-
-const skinnedNode = new StaticGltfNode(cube)
-
-renderer.scene.addNode3D(skinnedNode)
-
-// Animation
+renderer.scene.addNode3D(cubeNode)
 
 loopRaf.listeners.add(() => {
     orbitControls.update()
-    renderer.render()
+    renderer.render(0.1)
 })
-
-// Point Light
-
-// HTML
