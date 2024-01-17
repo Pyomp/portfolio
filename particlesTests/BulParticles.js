@@ -14,7 +14,7 @@ export class Bul extends ParticleSystem {
     constructor(
         /** @type {Texture} */ sparkleTexture
     ) {
-        const COUNT = 500
+        const COUNT = 400
 
         super({
             particleKeyframes: [
@@ -41,23 +41,29 @@ export class Bul extends ParticleSystem {
             new Vector3(-R, R, -R),
             new Vector3(R, -R, -R),
         ]
-
+        const _vector3 = new Vector3(R, -R, -R)
         for (let i = 0; i < COUNT; i++) {
             const offset3 = i * 3
-            positions[i % 4].toArray(this.geometry.position, offset3)
+            const mod = i % 7
+            if (mod > 3) {
+                _vector3.randomDirection().multiplyScalar((Math.random() * 0.3)**0.5)
+                _vector3.toArray(this.geometry.position, offset3)
+            } else {
+                positions[mod].toArray(this.geometry.position, offset3)
+            }
         }
 
         for (let i = 0; i < COUNT; i++) {
             const offset3 = i * 3
-            this.geometry.velocity[offset3] = (Math.random() - 0.5) * 0.1
-            this.geometry.velocity[offset3 + 1] = -Math.random() * 2
-            this.geometry.velocity[offset3 + 2] = (Math.random() - 0.5) * 0.1
+            this.geometry.velocity[offset3] = 0
+            this.geometry.velocity[offset3 + 1] = 0
+            this.geometry.velocity[offset3 + 2] = 0
         }
     }
 
     #angle = 0
     update(/** @type {number} */ deltaTime) {
-        this.#angle += deltaTime 
+        this.#angle += deltaTime
         quaternion_1.setFromAxisAngle(randomVector3_1, this.#angle)
         quaternion_2.setFromAxisAngle(randomVector3_2, this.#angle)
         this.quaternion.multiplyQuaternions(quaternion_1, quaternion_2)

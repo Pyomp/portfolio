@@ -1,46 +1,29 @@
 'use strict'
 
-import { styles } from "../js-lib/dom/styles/styles.js"
 import { OrbitControls } from "../js-lib/3dEngine/controls/OrbitControls.js"
-import { LightParticleObject } from "../js-lib/3dEngine/extras/LightParticleObject.js"
 import { loadGLTF } from "../js-lib/3dEngine/loaders/gltfLoader.js"
-import { Renderer } from "../js-lib/3dEngine/renderer/Renderer.js"
-import { PointLight } from "../js-lib/3dEngine/sceneGraph/light/PointLight.js"
-import { loopRaf } from "../js-lib/globals/loopRaf.js"
-import { BasicStaticMaterial } from "../js-lib/3dEngine/sceneGraph/materials/BasicStaticGltfMaterial.js"
-import { Node3D } from "../js-lib/3dEngine/sceneGraph/Node3D.js"
+import { basicProgram } from "../js-lib/3dEngine/programs/basicProgram.js"
+import { GltfManager } from "../js-lib/3dEngine/sceneGraph/gltf/GltfManager.js"
+import { GlRenderer } from "../js-lib/3dEngine/webgl/glRenderer/GlRenderer.js"
+import { AnimationFramePlayer } from "../js-lib/dom/AnimationFramePlayer.js"
 
-const renderer = new Renderer()
+const renderer = new GlRenderer()
 document.body.prepend(renderer.htmlElement)
-
-// Point Light
-const lightParticleObject = new LightParticleObject()
-lightParticleObject.count = 2
-renderer.scene.objects.add(lightParticleObject)
-
-const pointLight1 = new PointLight()
-pointLight1.color.setRGB(1, 0, 0)
-pointLight1.position.set(3, 0, 0)
-renderer.pointLights.add(pointLight1)
-const pointLight2 = new PointLight()
-pointLight2.color.setRGB(0, 0, 1)
-pointLight2.position.set(-3, 0, 0)
-renderer.pointLights.add(pointLight2)
+renderer.camera.far = 1000
 
 const orbitControls = new OrbitControls(renderer.camera, renderer.htmlElement)
 
-// Mesh Init
-const basicStaticMaterial = new BasicStaticMaterial()
+const gltfManager = new GltfManager()
 
 const gltfNodes = await loadGLTF(new URL('./cube.glb', import.meta.url))
 
-const cubeNode = new Node3D()
-const cube = basicStaticMaterial.createObjectFromGltf(cubeNode, gltfNodes['Cube'].mesh.primitives[0])
-cubeNode.objects.add(cube)
+const node3D = gltfManager.getNode3D(gltfNodes['Cube'], basicProgram)
 
-renderer.scene.addNode3D(cubeNode)
+renderer.scene.addNode3D(node3D)
 
-loopRaf.listeners.add(() => {
+const animationFramePlayer = new AnimationFramePlayer(() => {
     orbitControls.update()
-    renderer.render(0.1)
+    renderer.render(animationFramePlayer.deltatimeSecond)
 })
+
+animationFramePlayer.play()
