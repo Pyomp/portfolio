@@ -53,8 +53,8 @@ const gltfManager = new GltfManager()
 const gltfNodes = await loadGLTF(new URL('./blader.glb', import.meta.url))
 
 const phongSkinnedProgram = new PhongProgram({ renderer, isShininessEnable: false, isSkinned: true })
-const node3D = gltfManager.getNode3D(gltfNodes['blader'], phongSkinnedProgram)
-
+const node3D = gltfManager.getNode3D(gltfNodes['blader'])
+node3D.objects.forEach((object) => { object.glProgramData = phongSkinnedProgram })
 renderer.scene.addNode3D(node3D)
 node3D.mixer.play('idle_pingpong')
 
