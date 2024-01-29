@@ -5,7 +5,6 @@ import { OrbitControls } from "../js-lib/3dEngine/controls/OrbitControls.js"
 import { loadGLTF } from "../js-lib/3dEngine/loaders/gltfLoader.js"
 import { PhongProgram } from "../js-lib/3dEngine/programs/PhongProgram.js"
 import { PointLight } from "../js-lib/3dEngine/sceneGraph/PointLight.js"
-import { GltfManager } from "../js-lib/3dEngine/sceneGraph/gltf/GltfManager.js"
 import { GlRenderer } from "../js-lib/3dEngine/webgl/glRenderer/GlRenderer.js"
 import { AnimationFramePlayer } from "../js-lib/dom/AnimationFramePlayer.js"
 import { Color } from "../js-lib/math/Color.js"
@@ -17,6 +16,7 @@ import { GlTextureData } from "../js-lib/3dEngine/webgl/glDescriptors/GlTextureD
 import { createSparkleCanvas } from "../js-lib/3dEngine/textures/sparkle.js"
 import { getImage } from "../js-lib/utils/utils.js"
 import { SkyBoxGlObject } from "../js-lib/3dEngine/sceneGraph/objects/SkyBoxGlObject.js"
+import { GltfNodeManager } from "../js-lib/3dEngine/sceneGraph/gltf/GltfNodeManager.js"
 
 const renderer = new GlRenderer()
 document.body.prepend(renderer.htmlElement)
@@ -48,13 +48,11 @@ renderer.scene.objects.add(ambientLight)
 
 //////////////// GLTF SKINNED MODEL
 
-const gltfManager = new GltfManager()
-
-const gltfNodes = await loadGLTF(new URL('./blader.glb', import.meta.url))
-
 const phongSkinnedProgram = new PhongProgram({ renderer, isShininessEnable: false, isSkinned: true })
-const node3D = gltfManager.getNode3D(gltfNodes['blader'])
-node3D.objects.forEach((object) => { object.glProgramData = phongSkinnedProgram })
+const gltfNodes = await loadGLTF(new URL('./blader.glb', import.meta.url))
+const gltfManager = new GltfNodeManager(gltfNodes['blader'], phongSkinnedProgram)
+
+const node3D = gltfManager.getNode()
 renderer.scene.addNode3D(node3D)
 node3D.mixer.play('idle_pingpong')
 
