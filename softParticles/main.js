@@ -1,71 +1,82 @@
 'use strict'
 
-import { styles } from "../js-lib/dom/styles/styles.js"
+import "../js-lib/dom/styles/styles.js"
 import { OrbitControls } from "../js-lib/3dEngine/controls/OrbitControls.js"
 import { Node3D } from "../js-lib/3dEngine/sceneGraph/Node3D.js"
-import { Object3D } from "../js-lib/3dEngine/sceneGraph/Object3D.js"
-import { PointLight } from "../js-lib/3dEngine/sceneGraph/light/PointLight.js"
-import { loopRaf } from "../js-lib/globals/loopRaf.js"
 import { Color } from "../js-lib/math/Color.js"
-import { OnlyColorPhongMaterial } from "./OnlyColorPhongMaterial.js"
-import { KnotGeometry } from "../js-lib/3dEngine/geometries/KnotGeometry.js"
-import { LightParticleObject } from "../js-lib/3dEngine/extras/LightParticleObject.js"
+import { KnotGlVoa as KnotGlVao } from "../js-lib/3dEngine/geometries/KnotGlVao.js"
 import { FireParticleSystem } from "./FireParticleSystem.js"
-import { Renderer } from "../js-lib/3dEngine/renderer/Renderer.js"
+import { GlObject } from "../js-lib/3dEngine/webgl/glDescriptors/GlObject.js"
+import { PhongProgram } from "../js-lib/3dEngine/programs/PhongProgram.js"
+import { GlRenderer } from "../js-lib/3dEngine/webgl/glRenderer/GlRenderer.js"
+import { LightParticleObject } from "../js-lib/3dEngine/sceneGraph/objects/LightParticleObject.js"
+import { PointLight } from "../js-lib/3dEngine/sceneGraph/PointLight.js"
+import { LoopRaf } from "../js-lib/utils/LoopRaf.js"
+import { Vector3 } from "../js-lib/math/Vector3.js"
+import { AmbientLight } from "../js-lib/3dEngine/sceneGraph/AmbientLight.js"
+import { GLSL_COMMON } from "../js-lib/3dEngine/programs/chunks/glslCommon.js"
 
-const renderer = new Renderer()
+const loopRaf = new LoopRaf()
+
+const renderer = new GlRenderer()
 document.body.prepend(renderer.htmlElement)
 
 const orbitControls = new OrbitControls(renderer.camera, renderer.htmlElement)
 
 // Mesh Init
-
-const geometry = new KnotGeometry()
-const material = new OnlyColorPhongMaterial()
+const knotVao = new KnotGlVao()
+const phongProgram = new PhongProgram({ renderer, isShininessEnable: false, isSkinned: false })
 class KnotMesh extends Node3D {
     constructor() {
         super()
-        this.objects.add(new Object3D({
-            material,
-            geometry,
+        this.objects.add(new GlObject({
+            glProgram: phongProgram,
+            glVao: knotVao,
             uniforms: {
-                modelView: this.worldMatrix,
-                specular: new Color(0xaaaaaa),
-                shininess: 30,
-                color: new Color(1, 1, 1)
+                [GLSL_COMMON.worldMatrix]: this.worldMatrix,
+                [GLSL_COMMON.baseColor]: new Color(1, 1, 1)
             }
         }))
     }
 }
 
 const checkerSphereMesh = new KnotMesh()
-
 renderer.scene.addNode3D(checkerSphereMesh)
 
-// Animation
-loopRaf.listeners.add(() => {
-    orbitControls.update()
-    renderer.render(loopRaf.deltatimeSecond)
-})
+const ambientLight = new AmbientLight()
+renderer.scene.objects.add(ambientLight)
 
 // Point Light
-const lightParticleObject = new LightParticleObject()
-lightParticleObject.count = 2
+const lightParticleObject = new LightParticleObject(renderer)
 renderer.scene.objects.add(lightParticleObject)
 
-const pointLight1 = new PointLight()
-pointLight1.color.setRGB(1, 0, 0)
-pointLight1.position.set(3, 0, 0)
-renderer.pointLights.add(pointLight1)
-const pointLight2 = new PointLight()
-pointLight2.color.setRGB(0, 0, 1)
-pointLight2.position.set(-3, 0, 0)
-renderer.pointLights.add(pointLight2)
+const pointLight1 = new PointLight({
+    intensity: 1,
+    color: new Color().setRGB(1, 0, 0),
+    localPosition: new Vector3(3, 0, 0),
+})
+renderer.scene.objects.add(pointLight1)
+
+const pointLight2 = new PointLight({
+    intensity: 1,
+    color: new Color().setRGB(0, 0, 1),
+    localPosition: new Vector3(-3, 0, 0),
+})
+renderer.scene.objects.add(pointLight2)
 
 // Particle
 let fireParticleSystem = new FireParticleSystem()
-fireParticleSystem.position.y = -3
-renderer.particles.particleSystems.add(fireParticleSystem)
+const fireUpdate = fireParticleSystem.getUpdate(renderer.scene, new Vector3(0, -2, 0))
+let isFireRunning = true
+
+// Animation
+loopRaf.setUpdate(() => {
+    orbitControls.update()
+    renderer.render(loopRaf.deltatimeSecond)
+    if (isFireRunning) {
+        fireUpdate(loopRaf.deltatimeSecond)
+    }
+})
 
 // panel
 const panel = document.createElement('div')
@@ -76,21 +87,13 @@ panel.style.right = '0'
 const startFireButton = document.createElement('button')
 startFireButton.textContent = 'Start Fire'
 startFireButton.style.backgroundColor = '#444499'
-startFireButton.onclick = () => {
-    if (fireParticleSystem) return
-    fireParticleSystem = new FireParticleSystem()
-    fireParticleSystem.position.y = -3
-    renderer.particles.particleSystems.add(fireParticleSystem)
-}
+startFireButton.onclick = () => { isFireRunning = true }
 panel.appendChild(startFireButton)
 
 const stopFireButton = document.createElement('button')
 stopFireButton.textContent = 'Stop Fire'
 stopFireButton.style.backgroundColor = '#444499'
-stopFireButton.onclick = () => {
-    fireParticleSystem?.stop()
-    fireParticleSystem = undefined
-}
+stopFireButton.onclick = () => { isFireRunning = false }
 panel.appendChild(stopFireButton)
 
 const loseContextButton = document.createElement('button')
@@ -104,10 +107,10 @@ panel.appendChild(loseContextButton)
 document.body.appendChild(panel)
 
 setTimeout(() => {
-    const pointLight2 = new PointLight()
-    pointLight2.color.setRGB(0, 1, 0)
-    pointLight2.position.set(0, 3, 0)
-    renderer.pointLights.add(pointLight2)
-
-    lightParticleObject.count = 3
+    const pointLight = new PointLight({
+        intensity: 1,
+        color: new Color().setRGB(0, 1, 0),
+        localPosition: new Vector3(0, 3, 0),
+    })
+    renderer.scene.objects.add(pointLight)
 }, 2000)

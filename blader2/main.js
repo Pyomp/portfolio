@@ -12,11 +12,11 @@ import { Vector3 } from "../js-lib/math/Vector3.js"
 import { AmbientLight } from "../js-lib/3dEngine/sceneGraph/AmbientLight.js"
 import { Particle } from "../js-lib/3dEngine/sceneGraph/particle/Particle.js"
 import { ParticleKeyframe } from "../js-lib/3dEngine/sceneGraph/particle/ParticleKeyframe.js"
-import { GlTextureData } from "../js-lib/3dEngine/webgl/glDescriptors/GlTextureData.js"
 import { createSparkleCanvas } from "../js-lib/3dEngine/textures/sparkle.js"
 import { getImage } from "../js-lib/utils/utils.js"
 import { SkyBoxGlObject } from "../js-lib/3dEngine/sceneGraph/objects/SkyBoxGlObject.js"
 import { GltfNodeManager } from "../js-lib/3dEngine/sceneGraph/gltf/GltfNodeManager.js"
+import { GlTexture } from "../js-lib/3dEngine/webgl/glDescriptors/GlTexture.js"
 
 const renderer = new GlRenderer()
 document.body.prepend(renderer.htmlElement)
@@ -50,7 +50,10 @@ renderer.scene.objects.add(ambientLight)
 
 const phongSkinnedProgram = new PhongProgram({ renderer, isShininessEnable: false, isSkinned: true })
 const gltfNodes = await loadGLTF(new URL('./blader.glb', import.meta.url))
-const gltfManager = new GltfNodeManager(gltfNodes['blader'], phongSkinnedProgram)
+const gltfManager = new GltfNodeManager({
+    gltfNode: gltfNodes['blader'],
+    glProgramData: phongSkinnedProgram
+})
 
 const node3D = gltfManager.getNode()
 renderer.scene.addNode3D(node3D)
@@ -65,7 +68,7 @@ const fireKeyframes = [
     new ParticleKeyframe({ time: 2, color: new Color(0, 0, 1, 1), size: 3 }),
     new ParticleKeyframe({ time: 3, color: new Color(0, 0, 0, 0), size: 4 })
 ]
-const fireTexture = new GlTextureData({ data: createSparkleCanvas() })
+const fireTexture = new GlTexture({ data: createSparkleCanvas() })
 const firePosition = new Vector3(0.3, 0.3, 0)
 const leftHandBoneMatrix = node3D.mixer.rootBone.findByName('arm2.L.005').worldMatrix
 function addFireParticle() {
@@ -81,14 +84,14 @@ setInterval(() => { addFireParticle() }, 100)
 
 ///////////////// 
 
-const skyBox = new SkyBoxGlObject(await Promise.all([
-    getImage(new URL('./MilkyWay/dark-s_px.jpg', import.meta.url).href),
-    getImage(new URL('./MilkyWay/dark-s_nx.jpg', import.meta.url).href),
-    getImage(new URL('./MilkyWay/dark-s_py.jpg', import.meta.url).href),
-    getImage(new URL('./MilkyWay/dark-s_ny.jpg', import.meta.url).href),
-    getImage(new URL('./MilkyWay/dark-s_pz.jpg', import.meta.url).href),
-    getImage(new URL('./MilkyWay/dark-s_nz.jpg', import.meta.url).href)
-]))
+const skyBox = new SkyBoxGlObject(
+    new URL('./MilkyWay/dark-s_px.jpg', import.meta.url),
+    new URL('./MilkyWay/dark-s_nx.jpg', import.meta.url),
+    new URL('./MilkyWay/dark-s_py.jpg', import.meta.url),
+    new URL('./MilkyWay/dark-s_ny.jpg', import.meta.url),
+    new URL('./MilkyWay/dark-s_pz.jpg', import.meta.url),
+    new URL('./MilkyWay/dark-s_nz.jpg', import.meta.url),
+)
 
 renderer.scene.objects.add(skyBox)
 /////////////////////
