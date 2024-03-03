@@ -2,7 +2,9 @@
 
 ## Projects
 
-- [Sphere](https://pyomp.github.io/portfolio/sphere/)
+- [Cube](https://pyomp.github.io/portfolio/cube/)
+- [Skinned Character](https://pyomp.github.io/portfolio/skinnedCharacter/)
+- [Terrain Splatting](https://pyomp.github.io/portfolio/textureSplatting/)
 - [Soft Particle](https://pyomp.github.io/portfolio/softParticles)
 
 ## TODO
@@ -12,20 +14,20 @@
   - ~~animation system~~
   - ~~gltf mesh~~
   - ~~gltf skinned mesh~~
-  - gltf splatting mesh
+  - ~~gltf splatting mesh~~
   - raycaster (gpgpu?)
   - improve Orbit Controls (mobile, pad)
-  - Third Controls
-  - GlCapabilities Class
+  - ~~Third Controls~~
+  - ~~GlCapabilities Class~~
   - directional lights
-  - clean renderers
+  - ~~clean renderers~~
   - make diagram of renderers
-  - __DELETE OLD ENGINE__
+  - ~~__DELETE OLD ENGINE__~~
   - physics for particle system ("forces" ubo)
   - physics for hair ("forces" ubo, through animation (bones) system?)
 
 - Portfolio
   - soft transparent object
-  - animated mesh
+  - ~~animated mesh~~
   - WebTransport datagrams ping pong
-  - project manager (assets, lights, inputs, api, views)
+  - ~~project manager (assets, lights, inputs, api, views)~~
