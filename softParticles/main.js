@@ -11,12 +11,10 @@ import { PhongProgram } from "../js-lib/3dEngine/programs/PhongProgram.js"
 import { GlRenderer } from "../js-lib/3dEngine/webgl/glRenderer/GlRenderer.js"
 import { LightParticleObject } from "../js-lib/3dEngine/sceneGraph/objects/LightParticleObject.js"
 import { PointLight } from "../js-lib/3dEngine/sceneGraph/PointLight.js"
-import { LoopRaf } from "../js-lib/utils/LoopRaf.js"
 import { Vector3 } from "../js-lib/math/Vector3.js"
 import { AmbientLight } from "../js-lib/3dEngine/sceneGraph/AmbientLight.js"
 import { GLSL_COMMON } from "../js-lib/3dEngine/programs/chunks/glslCommon.js"
-
-const loopRaf = new LoopRaf()
+import { loopRaf } from "../js-lib/utils/loopRaf.js"
 
 const renderer = new GlRenderer()
 document.body.prepend(renderer.htmlElement)
@@ -70,11 +68,11 @@ const fireUpdate = fireParticleSystem.getUpdate(renderer.scene, new Vector3(0, -
 let isFireRunning = true
 
 // Animation
-loopRaf.setUpdate(() => {
+loopRaf.updates.add(() => {
     orbitControls.update()
-    renderer.render(loopRaf.deltatimeSecond)
+    renderer.render()
     if (isFireRunning) {
-        fireUpdate(loopRaf.deltatimeSecond)
+        fireUpdate()
     }
 })
 

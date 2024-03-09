@@ -9,7 +9,12 @@
     "disableSizeLimit": true,
     "pretty": true,
     "rootDir": ".",
-    "declaration": true
+    "declaration": true,
+    "strictFunctionTypes": true,
+    "noUnusedParameters": true,
+    "noErrorTruncation": true,
   },
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

@@ -3,6 +3,7 @@ import { Particle } from "../js-lib/3dEngine/sceneGraph/particle/Particle.js"
 import { ParticleKeyframe } from "../js-lib/3dEngine/sceneGraph/particle/ParticleKeyframe.js"
 import { createSparkleCanvas } from "../js-lib/3dEngine/textures/sparkle.js"
 import { GlTexture } from "../js-lib/3dEngine/webgl/glDescriptors/GlTexture.js"
+import { loopRaf } from "../js-lib/utils/loopRaf.js" 
 import { Color } from "../js-lib/math/Color.js"
 import { Vector3 } from "../js-lib/math/Vector3.js"
 
@@ -40,8 +41,8 @@ export class FireParticleSystem {
     getUpdate(node3D, position) {
         let time = 0
 
-        return (deltaTimeSecond) => {
-            time += deltaTimeSecond
+        return () => {
+            time += loopRaf.deltatimeSecond
             while (time > 0) {
                 this.#addParticle(node3D, position)
                 time -= 0.09

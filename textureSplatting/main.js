@@ -1,19 +1,16 @@
 'use strict'
 
+import "../js-lib/dom/styles/styles.js"
 import { OrbitControls } from "../js-lib/3dEngine/controls/OrbitControls.js"
-import { PhongProgram } from "../js-lib/3dEngine/programs/PhongProgram.js"
 import { GlSplattingProgram } from "../js-lib/3dEngine/programs/SplattingProgram.js"
 import { AmbientLight } from "../js-lib/3dEngine/sceneGraph/AmbientLight.js"
 import { PointLight } from "../js-lib/3dEngine/sceneGraph/PointLight.js"
 import { LightParticleObject } from "../js-lib/3dEngine/sceneGraph/objects/LightParticleObject.js"
 import { GlRenderer } from "../js-lib/3dEngine/webgl/glRenderer/GlRenderer.js"
-import "../js-lib/dom/styles/styles.js"
+import { loopRaf } from "../js-lib/utils/loopRaf.js"
 import { Color } from "../js-lib/math/Color.js"
 import { Vector3 } from "../js-lib/math/Vector3.js"
-import { LoopRaf } from "../js-lib/utils/LoopRaf.js"
 import { Zone0 } from "./Zone0.js"
-
-const loopRaf = new LoopRaf()
 
 const renderer = new GlRenderer()
 document.body.prepend(renderer.htmlElement)
@@ -51,7 +48,7 @@ renderer.scene.objects.add(pointLight2)
 
 // Animation
 
-loopRaf.setUpdate(() => {
+loopRaf.updates.add(() => {
     orbitControls.update()
-    renderer.render(loopRaf.deltatimeSecond)
+    renderer.render()
 })
